@@ -1,0 +1,75 @@
+---
+title: "Final Project, Part 2"
+author: "A. Kramer"
+date: "Wednesday, February 18, 2015"
+output: pdf_document
+---
+
+## Assignment
+
+Now in the second portion of the class, we're going to analyze the ToothGrowth data in the R datasets package.
+
+    1. Load the ToothGrowth data and perform some basic exploratory data analyses 
+    2. Provide a basic summary of the data.
+    3. Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there's other approaches worth considering)
+    4. State your conclusions and the assumptions needed for your conclusions. 
+
+## Overview
+
+The data framle loaded contains 60 observations on 3 variables.  The variables are:
+
+    1. Length of the tooth
+    2. Suppplement type (VC or QC)
+    3. Dosage in milliagrams
+
+The data set is interrogated to provide the basic summary of the datate and compare tooth growth by supplement and dosage (using confidence intervals).
+
+## Solution
+
+
+### Question 1: Load the ToothGrowth data and perform some basic exploratory data analyses
+
+```{r Question_1-1}
+library(datasets)
+tmp <- ToothGrowth
+str(tmp)
+```
+
+Plotting tooth length vs. supplement and tooth length vs. dosage to visually investigate the relationships between the variables.
+
+```{r Question_1-2}
+par(mfrow=c(1,2))
+boxplot(len~dose, data=tmp, xlab = "Dosage", ylab = "Length", main = "Tooth Growth")
+boxplot(len~supp, data=tmp, xlab = "Suppliment", ylab = "Length", main = "Tooth Growth")
+```
+
+### Question 2: Provide a basic summary of the data.
+
+```{r Question_2-1`}
+dim(tmp)
+tmp$dose <- as.factor(tmp$dose)
+summary(tmp)
+```
+
+Displaying table of supplement and dosage usage in the data frame.
+
+```{r Question_2-2}
+table(tmp$dose, tmp$supp)
+```
+
+### Question 3: Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. 
+
+Calculating Confidance Intervals for equal and unequal variances.
+
+```{r Question_3-1}
+t1 <- t.test(len~supp, paired=F, var.equal=T, data=tmp)
+t2 <- t.test(len~supp, paired=F, var.equal=F, data=tmp)
+results = cbind(c(t1$p.value, t2$p.value), c(t1$conf[1],t2$conf[1]), c(t1$conf[2],t2$conf[2]))
+colnames(results) <- c("P-Value", "Confidence Low", "Confidence High")
+rownames(results) <- c("Equal Variances","Unequal Varariances")
+results
+```
+
+### Question 4: State your conclusions and the assumptions needed for your conclusions. 
+
+Based on the analysis performed we can conclude that the 2mg dosage provides grated impact on tooth growth than 1mg or 0.5mg dosage.  We can also conclude that and both, Vitamin C and Orange Juice impact tooth growth. 
